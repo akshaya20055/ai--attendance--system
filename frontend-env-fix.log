@@ -1,0 +1,39 @@
+
+> ai-attendance-frontend@1.0.0 dev
+> vite --host 0.0.0.0 --port 5173
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1999[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.4:[1m5173[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m6:48:08 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles.css, /src/pages/FaceEnrollment.tsx, /src/components/WebcamAttendance.tsx[22m
+[2m6:48:09 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles.css, /src/pages/FaceEnrollment.tsx, /src/components/WebcamAttendance.tsx[22m
+[2m6:48:37 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/FaceEnrollment.tsx, /src/styles.css[22m
+[2m6:48:55 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m6:51:16 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles.css, /src/pages/FaceEnrollment.tsx, /src/components/WebcamAttendance.tsx[22m
+[2m6:51:16 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles.css, /src/pages/FaceEnrollment.tsx, /src/components/WebcamAttendance.tsx[22m
+[2m7:06:13 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m7:06:14 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m7:06:33 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m7:06:46 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m7:07:00 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ReportsPage.tsx, /src/styles.css[22m
+[2m1:18:24 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m1:18:25 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m1:18:25 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m1:47:22 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m1:47:22 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m2:54:25 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m2:54:26 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m2:54:54 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m2:56:31 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/FaceEnrollment.tsx, /src/styles.css[22m
+[2m3:22:31 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m3:22:33 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m3:23:13 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/FaceEnrollment.tsx, /src/styles.css[22m
+[2m5:10:06 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m5:10:07 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m5:10:35 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m5:10:35 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/WebcamAttendance.tsx, /src/styles.css[22m
+[2m6:36:35 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m
+[2m6:36:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AttendancePage.tsx, /src/styles.css[22m

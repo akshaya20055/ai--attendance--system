@@ -1,0 +1,84 @@
+
+> ai-attendance-frontend@1.0.0 dev
+> vite --host 0.0.0.0 --port 5173
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m2730[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.6:[1m5173[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m2:08:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/state/AuthContext.tsx, /src/styles.css, /src/pages/ForgotPassword.tsx, /src/pages/AdminDashboard.tsx, /src/pages/StudentDashboard.tsx, /src/pages/AttendancePage.tsx, /src/pages/FacultyDashboard.tsx, /src/pages/ResetPassword.tsx, /src/pages/UsersPage.tsx, /src/pages/ReportsPage.tsx[22m
+[2m2:08:37 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/state/AuthContext.tsx, /src/styles.css[22m
+[2m2:08:37 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/state/AuthContext.tsx, /src/styles.css, /src/pages/ForgotPassword.tsx, /src/pages/AdminDashboard.tsx, /src/pages/StudentDashboard.tsx, /src/pages/AttendancePage.tsx, /src/pages/FacultyDashboard.tsx, /src/pages/ResetPassword.tsx, /src/pages/UsersPage.tsx, /src/pages/ReportsPage.tsx[22m
+[2m2:08:37 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/styles.css[22m
+[2m2:08:38 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Layout.tsx, /src/styles.css[22m
+[2m2:08:38 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Landing.tsx, /src/styles.css[22m
+[2m2:08:38 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/styles.css[22m
+[2m2:08:38 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Layout.tsx, /src/styles.css[22m
+[2m2:08:49 PM[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/state/AuthContext.tsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m2:08:49 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/state/AuthContext.tsx[22m
+[2m2:08:51 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./pages/ProfilePage" from "src/App.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/Ai attendance system/frontend/src/App.tsx[39m:10:28
+[33m  25 |  import { Landing } from "./pages/Landing";
+  26 |  import { Login } from "./pages/Login";
+  27 |  import { ProfilePage } from "./pages/ProfilePage";
+     |                               ^
+  28 |  import { Register } from "./pages/Register";
+  29 |  import { ReportsPage } from "./pages/ReportsPage";[39m
+      at TransformPluginContext._formatError (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 12)
+      at async TransformPluginContext.transform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+[2m2:08:51 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./pages/ProfilePage" from "src/App.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/Ai attendance system/frontend/src/App.tsx[39m:10:28
+[33m  25 |  import { Landing } from "./pages/Landing";
+  26 |  import { Login } from "./pages/Login";
+  27 |  import { ProfilePage } from "./pages/ProfilePage";
+     |                               ^
+  28 |  import { Register } from "./pages/Register";
+  29 |  import { ReportsPage } from "./pages/ReportsPage";[39m
+      at TransformPluginContext._formatError (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 12)
+      at async TransformPluginContext.transform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+[2m2:08:53 PM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "./pages/ProfilePage" from "src/App.tsx". Does the file exist?
+[2m2:09:07 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Login.tsx, /src/styles.css[22m
+[2m2:09:07 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Login.tsx, /src/styles.css[22m
+[2m2:09:10 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./pages/ProfilePage" from "src/App.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/Ai attendance system/frontend/src/App.tsx[39m:10:28
+[33m  25 |  import { Landing } from "./pages/Landing";
+  26 |  import { Login } from "./pages/Login";
+  27 |  import { ProfilePage } from "./pages/ProfilePage";
+     |                               ^
+  28 |  import { Register } from "./pages/Register";
+  29 |  import { ReportsPage } from "./pages/ReportsPage";[39m
+      at TransformPluginContext._formatError (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 12)
+      at async TransformPluginContext.transform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///D:/Ai%20attendance%20system/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m2:10:07 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/Register.tsx[22m
+[2m2:10:40 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ForgotPassword.tsx, /src/styles.css[22m
+[2m2:10:40 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ForgotPassword.tsx, /src/styles.css[22m
+[2m2:10:41 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ResetPassword.tsx, /src/styles.css[22m
+[2m2:10:41 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/ResetPassword.tsx, /src/styles.css[22m
+[2m2:11:01 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/UsersPage.tsx, /src/styles.css[22m

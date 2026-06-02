@@ -1,0 +1,7 @@
+
+> ai-attendance-backend@1.0.0 start
+> node dist/server.js
+
+MongoDB connected: 127.0.0.1/ai_attendance
+API running on http://localhost:5000
+[0mGET /health [32m200[0m 48.988 ms - 45[0m
