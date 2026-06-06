@@ -7,10 +7,27 @@ import { api } from '../lib/api';
 export function AdminDashboard() {
   const [analytics, setAnalytics] = useState<any>({ totals: {}, methodBreakdown: [] });
   const [stats, setStats] = useState<any>({});
+  const [todayRecords, setTodayRecords] = useState<any[]>([]);
 
   useEffect(() => {
-    api.get('/analytics').then((res) => setAnalytics(res.data)).catch(() => undefined);
-    api.get('/admin/all-users').then((res) => setStats(res.data.stats)).catch(() => undefined);
+    function loadAdminData() {
+      api.get('/analytics').then((res) => setAnalytics(res.data)).catch(() => undefined);
+      api.get('/admin/all-users').then((res) => setStats(res.data.stats)).catch(() => undefined);
+      api.get('/attendance').then((res) => {
+        const records = res.data.records || [];
+        const todayStr = new Date().toLocaleDateString();
+        const filtered = records.filter((record: any) => {
+          const isPresent = record.status === 'present' || record.status === 'late';
+          const isToday = new Date(record.date).toLocaleDateString() === todayStr;
+          return isPresent && isToday;
+        });
+        setTodayRecords(filtered);
+      }).catch((error) => console.error('[AdminDashboard] Live feed fetch failed', error));
+    }
+
+    loadAdminData();
+    const timer = setInterval(loadAdminData, 15000);
+    return () => clearInterval(timer);
   }, []);
 
   const totals = analytics.totals || {};
@@ -48,6 +65,44 @@ export function AdminDashboard() {
             <StatCard title="Pending Faces" value={totals.faceNotEnrolled ?? 0} icon={ShieldX} accent="bg-gold/20 text-amber-700" />
           </div>
         </section>
+      </div>
+
+      <div className="card">
+        <h2 className="mb-4 text-lg font-black flex items-center gap-2">
+          <Clock className="text-teal-700 dark:text-mint" size={20} />
+          Live Attendance Activity Feed
+        </h2>
+        <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+          {todayRecords.length > 0 ? (
+            todayRecords.map((record: any) => {
+              const studentName = record.student?.name || record.studentName || 'Student';
+              const dept = record.student?.department;
+              const branch = dept && typeof dept === 'object'
+                ? (dept as any).code || (dept as any).name || 'GEN'
+                : 'GEN';
+              const year = record.student?.year ? `${record.student.year} Year` : '1st Year';
+              const subjectName = record.subject || record.classRoom?.subject || 'Subject';
+              
+              return (
+                <div key={record._id} className="flex items-center justify-between gap-4 p-3 rounded-lg bg-teal-500/5 border border-teal-500/10 text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <div>
+                      <span className="font-bold text-slate-900 dark:text-white">{studentName}</span>{' '}
+                      <span className="text-sm font-semibold opacity-85">({branch}, {year})</span> has attended today for{' '}
+                      <span className="font-bold text-teal-700 dark:text-mint">{subjectName}</span>.
+                    </div>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-400">
+                    {record.time || new Date(record.createdAt || record.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-slate-500 text-sm text-center py-6 font-semibold">No attendance marked today yet.</p>
+          )}
+        </div>
       </div>
 
       <div className="card">

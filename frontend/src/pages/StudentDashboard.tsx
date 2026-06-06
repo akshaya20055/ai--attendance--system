@@ -229,6 +229,15 @@ export function StudentDashboard() {
     };
   }, [goal, subjectRows, summary.overallPercentage]);
 
+  const attendedToday = useMemo(() => {
+    const todayStr = new Date().toLocaleDateString();
+    return attendanceRecords.filter((record) => {
+      const isPresent = record.status === 'present' || record.status === 'late';
+      const isToday = new Date(record.date).toLocaleDateString() === todayStr;
+      return isPresent && isToday;
+    }).length;
+  }, [attendanceRecords]);
+
   const monthlyData = useMemo(() => {
     return buildMonthlyData(attendanceRecords);
   }, [attendanceRecords]);
@@ -246,17 +255,21 @@ export function StudentDashboard() {
     { label: 'Goal Chaser', active: goal <= metrics.overall }
   ];
 
-  const notifications = subjectRows.length > 0 ? [
-    metrics.lowSubjects.length
-      ? `${metrics.lowSubjects.length} subject needs attention below 75%.`
-      : 'All subjects are above the low-attendance threshold.',
-    metrics.classesNeeded
-      ? `Attend the next ${metrics.classesNeeded} classes to reach ${goal}%.`
-      : `Attendance goal of ${goal}% is currently on track.`,
-    lastUpdated ? `Real-time sync checked at ${lastUpdated.toLocaleTimeString()}.` : 'Real-time sync is starting.'
-  ] : [
-    'No low attendance alerts.',
-    `Set your attendance goal (currently ${goal}%) and start marking attendance.`,
+  const notifications = [
+    attendedToday > 0
+      ? `You have attended ${attendedToday} ${attendedToday === 1 ? 'class' : 'classes'} today.`
+      : 'No classes attended today yet.',
+    ...(subjectRows.length > 0 ? [
+      metrics.lowSubjects.length
+        ? `${metrics.lowSubjects.length} subject needs attention below 75%.`
+        : 'All subjects are above the low-attendance threshold.',
+      metrics.classesNeeded
+        ? `Attend the next ${metrics.classesNeeded} classes to reach ${goal}%.`
+        : `Attendance goal of ${goal}% is currently on track.`
+    ] : [
+      'No low attendance alerts.',
+      `Set your attendance goal (currently ${goal}%) and start marking attendance.`
+    ]),
     lastUpdated ? `Real-time sync checked at ${lastUpdated.toLocaleTimeString()}.` : 'Real-time sync is starting.'
   ];
 
@@ -348,11 +361,21 @@ export function StudentDashboard() {
         </div>
       </div>
 
+      {attendedToday > 0 && (
+        <div className="flex items-center gap-3 rounded-xl bg-teal-500/10 p-4 border border-teal-500/20 text-teal-700 dark:text-mint">
+          <CheckCircle2 size={22} className="shrink-0" />
+          <div>
+            <p className="font-black">Daily Accomplishment!</p>
+            <p className="text-sm font-semibold opacity-90">You have successfully attended {attendedToday} {attendedToday === 1 ? 'class' : 'classes'} today.</p>
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Attendance %" value={`${metrics.overall}%`} icon={CalendarCheck} accent="bg-mint/20 text-teal-700" />
         <StatCard title="Present Count" value={metrics.present} icon={CheckCircle2} accent="bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15" />
         <StatCard title="Absent Count" value={metrics.absent} icon={XCircle} accent="bg-coral/15 text-rose-600" />
-        <StatCard title="Leave Count" value={metrics.leave} icon={Clock} accent="bg-gold/20 text-amber-700" />
+        <StatCard title="Attended Today" value={attendedToday} icon={Clock} accent="bg-gold/20 text-amber-700" />
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">

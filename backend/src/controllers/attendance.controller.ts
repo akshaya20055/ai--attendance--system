@@ -58,7 +58,11 @@ function currentTime(input = new Date()) {
 
 async function populateAttendance(record: any) {
   return Attendance.findById(record._id)
-    .populate('student', 'name email studentId')
+    .populate({
+      path: 'student',
+      select: 'name email studentId department semester year',
+      populate: { path: 'department', select: 'name code' }
+    })
     .populate('classRoom', 'name code subject')
     .populate('subjectId', 'name code')
     .populate('markedBy', 'name');
@@ -173,7 +177,11 @@ export async function listAttendance(req: Request, res: Response) {
   if (req.query.classRoom) filter.classRoom = req.query.classRoom;
 
   const records = await Attendance.find(filter)
-    .populate('student', 'name email studentId')
+    .populate({
+      path: 'student',
+      select: 'name email studentId department semester year',
+      populate: { path: 'department', select: 'name code' }
+    })
     .populate('classRoom', 'name code subject')
     .populate('subjectId', 'name code')
     .populate('markedBy', 'name')

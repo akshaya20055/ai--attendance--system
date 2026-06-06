@@ -9,4 +9,4 @@ classRouter.use(protect);
 classRouter.get('/', asyncHandler(listClasses));
 classRouter.post('/', authorize('faculty', 'admin'), asyncHandler(createClass));
 classRouter.patch('/:id', authorize('faculty', 'admin'), asyncHandler(updateClass));
-classRouter.get('/:id/qr', authorize('faculty', 'admin'), asyncHandler(getClassQr));
+classRouter.get('/:id/qr', authorize('faculty', 'admin', 'student'), asyncHandler(getClassQr));
