@@ -165,8 +165,11 @@ export async function markAttendance(req: Request, res: Response) {
 
 export async function listAttendance(req: Request, res: Response) {
   const filter: Record<string, unknown> = {};
-  if (req.user?.role === 'student') filter.student = req.user.id;
-  if (req.query.student) filter.student = req.query.student;
+  if (req.user?.role === 'student') {
+    filter.student = req.user.id;
+  } else if (req.query.student) {
+    filter.student = req.query.student;
+  }
   if (req.query.classRoom) filter.classRoom = req.query.classRoom;
 
   const records = await Attendance.find(filter)

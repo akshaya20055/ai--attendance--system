@@ -23,7 +23,12 @@ export function Layout() {
 
   const dashboard = `/${user?.role || 'student'}`;
   const nav = user?.role === 'admin'
-    ? [{ to: '/approvals', label: 'User Approvals', icon: ClipboardCheck }, { to: '/subjects', label: 'Subjects', icon: LibraryBig }, ...baseNav]
+    ? [
+        { to: '/approvals', label: 'User Approvals', icon: ClipboardCheck },
+        { to: '/subjects', label: 'Subjects', icon: LibraryBig },
+        { to: '/face-management', label: 'Face Management', icon: ScanFace },
+        ...baseNav.filter((item) => item.to !== '/face-enrollment')
+      ]
     : baseNav.filter((item) => item.to !== '/users');
 
   return (

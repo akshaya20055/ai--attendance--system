@@ -43,7 +43,7 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(morgan('dev'));
 app.use(
   rateLimit({

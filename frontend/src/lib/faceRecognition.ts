@@ -243,6 +243,32 @@ export async function detectFaceFromSource(source: HTMLVideoElement | HTMLImageE
 
 export function captureFaceImage(source: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement) {
   const frame = drawEnhancedSource(source);
+  
+  // Resize to a thumbnail to save bandwidth and storage
+  const maxDim = 320;
+  let w = frame.width;
+  let h = frame.height;
+  if (w > maxDim || h > maxDim) {
+    if (w > h) {
+      h = Math.round((h * maxDim) / w);
+      w = maxDim;
+    } else {
+      w = Math.round((w * maxDim) / h);
+      h = maxDim;
+    }
+  }
+  
+  const resizeCanvas = document.createElement('canvas');
+  resizeCanvas.width = w;
+  resizeCanvas.height = h;
+  const resizeCtx = resizeCanvas.getContext('2d');
+  if (resizeCtx) {
+    resizeCtx.drawImage(frame.canvas, 0, 0, w, h);
+    const dataUrl = resizeCanvas.toDataURL('image/jpeg', 0.75);
+    console.debug('[FaceRecognition] Captured face image data (resized)', { bytes: dataUrl.length, w, h });
+    return dataUrl;
+  }
+  
   const dataUrl = frame.canvas.toDataURL('image/jpeg', 0.82);
   console.debug('[FaceRecognition] Captured face image data', { bytes: dataUrl.length });
   return dataUrl;

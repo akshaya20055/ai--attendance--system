@@ -44,13 +44,29 @@ export async function getAttendanceSummary(studentId?: string) {
 }
 
 export async function getSystemAnalytics() {
-  const [students, faculty, admins, classes, attendance] = await Promise.all([
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [
+    studentsCount,
+    facultyCount,
+    adminsCount,
+    classesCount,
+    attendanceCount,
+    presentTodayStudents,
+    faceEnrolledCount
+  ] = await Promise.all([
     User.countDocuments({ role: 'student' }),
     User.countDocuments({ role: 'faculty' }),
     User.countDocuments({ role: 'admin' }),
     ClassRoom.countDocuments(),
-    Attendance.countDocuments()
+    Attendance.countDocuments(),
+    Attendance.distinct('student', { date: today, status: { $in: ['present', 'late'] } }),
+    User.countDocuments({ role: 'student', faceEmbeddings: { $exists: true, $not: { $size: 0 } } })
   ]);
+
+  const presentToday = presentTodayStudents.length;
+  const absentToday = Math.max(0, studentsCount - presentToday);
 
   const methodBreakdown = await Attendance.aggregate([
     { $group: { _id: '$method', count: { $sum: 1 } } },
@@ -58,7 +74,17 @@ export async function getSystemAnalytics() {
   ]);
 
   return {
-    totals: { students, faculty, admins, classes, attendance },
+    totals: {
+      students: studentsCount,
+      faculty: facultyCount,
+      admins: adminsCount,
+      classes: classesCount,
+      attendance: attendanceCount,
+      presentToday,
+      absentToday,
+      faceEnrolled: faceEnrolledCount,
+      faceNotEnrolled: Math.max(0, studentsCount - faceEnrolledCount)
+    },
     methodBreakdown
   };
 }

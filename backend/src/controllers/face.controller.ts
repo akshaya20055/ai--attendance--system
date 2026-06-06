@@ -64,11 +64,15 @@ export async function getFaceEnrollment(req: Request, res: Response) {
 export async function saveFaceEnrollment(req: Request, res: Response) {
   if (req.user?.role !== 'student') throw new AppError('Only students can enroll their own face', 403);
   const payload = enrollmentSchema.parse(req.body);
-  const student = await User.findById(req.user.id).select('name role status approvalStatus isActive');
+  const student = await User.findById(req.user.id).select('name role status approvalStatus isActive faceEmbeddings');
   if (!student) throw new AppError('Student account was not found', 404);
   if (student.role !== 'student') throw new AppError('Only students can enroll their own face', 403);
   if (!student.isActive || (student.status || student.approvalStatus) !== 'approved') {
     throw new AppError('Student account is inactive or pending approval', 403);
+  }
+
+  if (student.faceEmbeddings && student.faceEmbeddings.length > 0) {
+    throw new AppError('Face is already enrolled. Please contact an admin to delete your current enrollment to re-enroll.', 400);
   }
 
   console.log('[FaceEnrollment] Saving embeddings', {
@@ -94,6 +98,32 @@ export async function saveFaceEnrollment(req: Request, res: Response) {
     enrolled: true,
     count: user?.faceEmbeddings?.length || 0,
     imageCount: user?.faceImages?.length || 0,
+    userId: user._id,
+    studentId: user._id
+  });
+}
+
+export async function deleteFaceEnrollment(req: Request, res: Response) {
+  const userId = req.params.userId;
+  const user = await User.findById(userId);
+  if (!user) throw new AppError('Student account was not found', 404);
+  if (user.role !== 'student') throw new AppError('Only students have face enrollment records', 400);
+
+  user.faceEmbeddings = [];
+  user.faceImages = [];
+  user.faceDescriptor = [];
+  await user.save();
+
+  console.log('[FaceEnrollment] Admin deleted face enrollment', {
+    adminId: req.user?.id,
+    userId
+  });
+
+  res.json({
+    message: 'Face enrollment deleted successfully',
+    enrolled: false,
+    count: 0,
+    imageCount: 0,
     userId: user._id,
     studentId: user._id
   });

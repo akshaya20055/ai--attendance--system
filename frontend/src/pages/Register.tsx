@@ -25,6 +25,7 @@ export function Register() {
     employeeId: '',
     department: 'CSE',
     year: '1',
+    semester: '1',
     phone: '',
     adminCode: ''
   });
@@ -57,6 +58,7 @@ export function Register() {
         department: form.department,
         phone: form.phone,
         year: Number(form.year),
+        semester: Number(form.semester),
         rollNumber: form.rollNumber,
         employeeId: form.employeeId,
         adminCode: form.adminCode
@@ -100,7 +102,8 @@ export function Register() {
           {role === 'student' && (
             <>
               <input className="input" placeholder="Roll number" value={form.rollNumber} onChange={(event) => update('rollNumber', event.target.value)} required />
-              <input className="input" placeholder="Year" type="number" min="1" max="6" value={form.year} onChange={(event) => update('year', event.target.value)} />
+              <input className="input" placeholder="Year" type="number" min="1" max="6" value={form.year} onChange={(event) => update('year', event.target.value)} required />
+              <input className="input" placeholder="Semester" type="number" min="1" max="12" value={form.semester} onChange={(event) => update('semester', event.target.value)} required />
             </>
           )}
           {role === 'faculty' && <input className="input" placeholder="Employee ID" value={form.employeeId} onChange={(event) => update('employeeId', event.target.value)} required />}

@@ -207,8 +207,8 @@ export function StudentDashboard() {
     };
   }, []);
 
-  const subjectRows = summary.subjectWise.length ? summary.subjectWise : fallbackSubjects;
-  const attendanceRecords = records.length ? records : fallbackRecords;
+  const subjectRows = summary.subjectWise || [];
+  const attendanceRecords = records || [];
 
   const metrics = useMemo(() => {
     const total = subjectRows.reduce((sum, item) => sum + item.total, 0);
@@ -230,15 +230,8 @@ export function StudentDashboard() {
   }, [goal, subjectRows, summary.overallPercentage]);
 
   const monthlyData = useMemo(() => {
-    const rows = buildMonthlyData(attendanceRecords);
-    return rows.length > 1 ? rows : [
-      { month: 'Jan', percentage: 76, total: 18 },
-      { month: 'Feb', percentage: 80, total: 21 },
-      { month: 'Mar', percentage: 83, total: 24 },
-      { month: 'Apr', percentage: 86, total: 25 },
-      { month: 'May', percentage: metrics.overall, total: metrics.total || 1 }
-    ];
-  }, [attendanceRecords, metrics.overall, metrics.total]);
+    return buildMonthlyData(attendanceRecords);
+  }, [attendanceRecords]);
 
   const methodData = useMemo(() => [
     { name: 'QR', value: attendanceRecords.filter((record) => record.method === 'qr').length },
@@ -253,7 +246,7 @@ export function StudentDashboard() {
     { label: 'Goal Chaser', active: goal <= metrics.overall }
   ];
 
-  const notifications = [
+  const notifications = subjectRows.length > 0 ? [
     metrics.lowSubjects.length
       ? `${metrics.lowSubjects.length} subject needs attention below 75%.`
       : 'All subjects are above the low-attendance threshold.',
@@ -261,9 +254,13 @@ export function StudentDashboard() {
       ? `Attend the next ${metrics.classesNeeded} classes to reach ${goal}%.`
       : `Attendance goal of ${goal}% is currently on track.`,
     lastUpdated ? `Real-time sync checked at ${lastUpdated.toLocaleTimeString()}.` : 'Real-time sync is starting.'
+  ] : [
+    'No low attendance alerts.',
+    `Set your attendance goal (currently ${goal}%) and start marking attendance.`,
+    lastUpdated ? `Real-time sync checked at ${lastUpdated.toLocaleTimeString()}.` : 'Real-time sync is starting.'
   ];
 
-  const insights = [
+  const insights = subjectRows.length > 0 ? [
     summary.prediction === 'at-risk'
       ? 'AI insight: recent attendance is trending downward. Prioritize the next two scheduled classes.'
       : summary.prediction === 'improving'
@@ -273,6 +270,10 @@ export function StudentDashboard() {
       ? `${metrics.lowSubjects[0].subject} has the lowest score at ${metrics.lowSubjects[0].percentage}%.`
       : 'No critical subject gaps detected.',
     `Prediction: ${metrics.classesNeeded ? `${metrics.classesNeeded} consecutive presents needed for goal recovery.` : 'goal can be maintained with regular attendance.'}`
+  ] : [
+    'AI insight: No attendance history available to calculate trends.',
+    'Start marking attendance via face recognition or QR codes.',
+    'Prediction will be calculated after your first class.'
   ];
 
   function uploadPhoto(event: ChangeEvent<HTMLInputElement>) {
@@ -388,17 +389,25 @@ export function StudentDashboard() {
                 </div>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={subjectRows}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="subject" tick={{ fontSize: 11 }} />
-                <YAxis domain={[0, 100]} />
-                <Tooltip />
-                <Bar dataKey="percentage" radius={[8, 8, 0, 0]}>
-                  {subjectRows.map((row) => <Cell key={row.subject} fill={row.percentage < 75 ? '#fb7185' : '#2dd4bf'} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {subjectRows.length > 0 ? (
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={subjectRows}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="subject" tick={{ fontSize: 11 }} />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip />
+                  <Bar dataKey="percentage" radius={[8, 8, 0, 0]}>
+                    {subjectRows.map((row) => <Cell key={row.subject} fill={row.percentage < 75 ? '#fb7185' : '#2dd4bf'} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex h-[240px] flex-col items-center justify-center text-slate-400">
+                <AlertTriangle size={36} className="mb-2 text-slate-500" />
+                <p className="text-sm font-bold">No Subject Data Available</p>
+                <p className="text-xs text-slate-500">Your subject-wise attendance breakdown will appear here.</p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -427,15 +436,23 @@ export function StudentDashboard() {
             <BarChart3 className="text-teal-700 dark:text-mint" size={20} />
             <h2 className="text-xl font-black">Monthly Attendance Charts</h2>
           </div>
-          <ResponsiveContainer width="100%" height="85%">
-            <AreaChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="month" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Area type="monotone" dataKey="percentage" stroke="#2dd4bf" fill="#2dd4bf" fillOpacity={0.18} />
-            </AreaChart>
-          </ResponsiveContainer>
+          {monthlyData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="85%">
+              <AreaChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="month" />
+                <YAxis domain={[0, 100]} />
+                <Tooltip />
+                <Area type="monotone" dataKey="percentage" stroke="#2dd4bf" fill="#2dd4bf" fillOpacity={0.18} />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[75%] flex-col items-center justify-center text-slate-400">
+              <BarChart3 size={36} className="mb-2 text-slate-500" />
+              <p className="text-sm font-bold">No Monthly Data Available</p>
+              <p className="text-xs text-slate-500">Your monthly charts will appear here.</p>
+            </div>
+          )}
         </section>
 
         <section className="card h-80">
@@ -443,15 +460,23 @@ export function StudentDashboard() {
             <LineChartIcon className="text-rose-600" size={20} />
             <h2 className="text-xl font-black">Attendance Trends</h2>
           </div>
-          <ResponsiveContainer width="100%" height="85%">
-            <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="month" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Line type="monotone" dataKey="percentage" stroke="#fb7185" strokeWidth={3} dot={{ r: 4 }} />
-            </LineChart>
-          </ResponsiveContainer>
+          {monthlyData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="85%">
+              <LineChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="month" />
+                <YAxis domain={[0, 100]} />
+                <Tooltip />
+                <Line type="monotone" dataKey="percentage" stroke="#fb7185" strokeWidth={3} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[75%] flex-col items-center justify-center text-slate-400">
+              <LineChartIcon size={36} className="mb-2 text-slate-500" />
+              <p className="text-sm font-bold">No Attendance Trends</p>
+              <p className="text-xs text-slate-500">Attendance trend analytics will appear here.</p>
+            </div>
+          )}
         </section>
       </div>
 
@@ -467,17 +492,21 @@ export function StudentDashboard() {
         <section className="card">
           <h2 className="mb-4 text-xl font-black">Subject-wise Attendance</h2>
           <div className="space-y-3">
-            {subjectRows.map((row) => (
-              <div key={row.subject}>
-                <div className="mb-1 flex items-center justify-between gap-3 text-sm">
-                  <span className="font-bold">{row.subject}</span>
-                  <span className={row.percentage < 75 ? 'font-black text-rose-600' : 'font-black text-teal-700 dark:text-mint'}>{row.percentage}%</span>
+            {subjectRows.length > 0 ? (
+              subjectRows.map((row) => (
+                <div key={row.subject}>
+                  <div className="mb-1 flex items-center justify-between gap-3 text-sm">
+                    <span className="font-bold">{row.subject}</span>
+                    <span className={row.percentage < 75 ? 'font-black text-rose-600' : 'font-black text-teal-700 dark:text-mint'}>{row.percentage}%</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+                    <div className={`h-full rounded-full ${row.percentage < 75 ? 'bg-coral' : 'bg-mint'}`} style={{ width: `${Math.min(row.percentage, 100)}%` }} />
+                  </div>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-                  <div className={`h-full rounded-full ${row.percentage < 75 ? 'bg-coral' : 'bg-mint'}`} style={{ width: `${Math.min(row.percentage, 100)}%` }} />
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-slate-500 text-sm text-center py-6 font-semibold">No subject-wise attendance recorded yet.</p>
+            )}
           </div>
         </section>
       </div>
@@ -615,9 +644,13 @@ export function StudentDashboard() {
             <h2 className="text-xl font-black">QR Attendance History</h2>
           </div>
           <div className="space-y-2">
-            {attendanceRecords.filter((record) => record.method === 'qr').slice(0, 5).map((record) => (
-              <p key={record._id} className="rounded-lg bg-white/70 p-3 text-sm dark:bg-white/5">{record.subject} | {formatDate(record.date)} | {record.status}</p>
-            ))}
+            {attendanceRecords.filter((record) => record.method === 'qr').length > 0 ? (
+              attendanceRecords.filter((record) => record.method === 'qr').slice(0, 5).map((record) => (
+                <p key={record._id} className="rounded-lg bg-white/70 p-3 text-sm dark:bg-white/5">{record.subject} | {formatDate(record.date)} | {record.status}</p>
+              ))
+            ) : (
+              <p className="text-slate-500 text-sm text-center py-4 font-semibold">No QR records found.</p>
+            )}
           </div>
         </section>
 
@@ -627,9 +660,13 @@ export function StudentDashboard() {
             <h2 className="text-xl font-black">Face Attendance History</h2>
           </div>
           <div className="space-y-2">
-            {attendanceRecords.filter((record) => record.method === 'face' || record.method === 'webcam').slice(0, 5).map((record) => (
-              <p key={record._id} className="rounded-lg bg-white/70 p-3 text-sm dark:bg-white/5">{record.subject} | {formatDate(record.date)} | {record.confidence || 0}%</p>
-            ))}
+            {attendanceRecords.filter((record) => record.method === 'face' || record.method === 'webcam').length > 0 ? (
+              attendanceRecords.filter((record) => record.method === 'face' || record.method === 'webcam').slice(0, 5).map((record) => (
+                <p key={record._id} className="rounded-lg bg-white/70 p-3 text-sm dark:bg-white/5">{record.subject} | {formatDate(record.date)} | {record.confidence || 0}%</p>
+              ))
+            ) : (
+              <p className="text-slate-500 text-sm text-center py-4 font-semibold">No face recognition records found.</p>
+            )}
           </div>
         </section>
       </div>
@@ -645,27 +682,43 @@ export function StudentDashboard() {
           </div>
         </div>
         <div className="grid gap-5 xl:grid-cols-[320px_1fr]">
-          <ResponsiveContainer width="100%" height={260}>
-            <PieChart>
-              <Pie data={methodData} dataKey="value" nameKey="name" outerRadius={90} label>
-                {methodData.map((item, index) => <Cell key={item.name} fill={['#2dd4bf', '#fb7185', '#fbbf24'][index % 3]} />)}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          {methodData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={methodData} dataKey="value" nameKey="name" outerRadius={90} label>
+                  {methodData.map((item, index) => <Cell key={item.name} fill={['#2dd4bf', '#fb7185', '#fbbf24'][index % 3]} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[260px] flex-col items-center justify-center text-slate-400">
+              <Sparkles size={36} className="mb-2 text-slate-500" />
+              <p className="text-sm font-bold">No Method Mix Data</p>
+              <p className="text-xs text-slate-500">Method distribution will appear here.</p>
+            </div>
+          )}
           <div className="overflow-auto">
             <table className="w-full min-w-[680px] text-left text-sm">
               <thead className="text-slate-500"><tr><th className="py-2">Date</th><th>Subject</th><th>Status</th><th>Method</th><th>Confidence</th></tr></thead>
               <tbody>
-                {attendanceRecords.slice(0, 12).map((record) => (
-                  <tr key={record._id} className="border-t border-slate-200 dark:border-white/10">
-                    <td className="py-3">{formatDate(record.date)}</td>
-                    <td className="font-semibold">{record.subject}</td>
-                    <td className="capitalize">{record.status}</td>
-                    <td className="capitalize">{record.method}</td>
-                    <td>{record.confidence ? `${record.confidence}%` : '-'}</td>
+                {attendanceRecords.length > 0 ? (
+                  attendanceRecords.slice(0, 12).map((record) => (
+                    <tr key={record._id} className="border-t border-slate-200 dark:border-white/10">
+                      <td className="py-3">{formatDate(record.date)}</td>
+                      <td className="font-semibold">{record.subject}</td>
+                      <td className="capitalize">{record.status}</td>
+                      <td className="capitalize">{record.method}</td>
+                      <td>{record.confidence ? `${record.confidence}%` : '-'}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-6 text-center text-slate-500 font-semibold">
+                      No attendance history found.
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

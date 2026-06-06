@@ -88,6 +88,12 @@ async function createAccount(role: 'student' | 'faculty' | 'admin', req: Request
   const exists = await User.findOne({ email: payload.email });
   if (exists) throw new AppError('Email already exists', 409);
 
+  const rollNumber = payload.studentId || payload.rollNumber;
+  if (role === 'student' && rollNumber) {
+    const rollExists = await User.findOne({ studentId: rollNumber });
+    if (rollExists) throw new AppError('Roll number already exists', 409);
+  }
+
   const department = await resolveDepartment(payload.department);
   const user = await User.create({
     name: payload.name,

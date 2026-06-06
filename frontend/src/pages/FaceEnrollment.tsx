@@ -20,14 +20,22 @@ export function FaceEnrollment() {
   const [loading, setLoading] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
 
+  const isMountedRef = useRef(true);
+
   useEffect(() => {
+    isMountedRef.current = true;
     api.get('/face/enrollment').then((res) => {
-      setSavedCount(res.data.count || 0);
+      if (isMountedRef.current) {
+        setSavedCount(res.data.count || 0);
+      }
       console.debug('[FaceEnrollment] Existing enrollment loaded', res.data);
     }).catch((error) => {
       console.error('[FaceEnrollment] Existing enrollment load failed', error);
     });
-    return () => streamRef.current?.getTracks().forEach((track) => track.stop());
+    return () => {
+      isMountedRef.current = false;
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+    };
   }, []);
 
   async function startCamera() {
@@ -36,7 +44,12 @@ export function FaceEnrollment() {
       setStatus('Loading face model...');
       console.debug('[FaceEnrollment] Loading model before camera start');
       await getFaceDetector((message) => setStatus(message));
+      if (!isMountedRef.current) return;
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      if (!isMountedRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
       console.debug('[FaceEnrollment] Camera permission granted', stream.getVideoTracks()[0]?.getSettings());
       streamRef.current = stream;
       if (videoRef.current) {
@@ -46,11 +59,12 @@ export function FaceEnrollment() {
         setStatus('Camera ready. Capture 5 clear face samples.');
       }
     } catch (error) {
+      if (!isMountedRef.current) return;
       console.error('[FaceEnrollment] Camera/model failed', error);
       const permissionDenied = error instanceof DOMException && error.name === 'NotAllowedError';
       setStatus(permissionDenied ? 'Camera permission denied. Allow webcam access and try again.' : 'Camera or model could not start. Check console logs.');
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     }
   }
 
@@ -77,7 +91,7 @@ export function FaceEnrollment() {
             embedding: result.embedding,
             image
           }
-        ].slice(0, 5);
+        ].slice(0, 10);
         setStatus(`Face detected. Sample ${nextSamples.length} added with ${Math.round(result.confidence * 100)}% confidence.`);
         return nextSamples;
       });
@@ -101,7 +115,7 @@ export function FaceEnrollment() {
   }
 
   async function uploadImages(event: ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(event.target.files || []).slice(0, 5 - samples.length);
+    const files = Array.from(event.target.files || []).slice(0, 10 - samples.length);
     for (const file of files) {
       const image = new Image();
       image.src = URL.createObjectURL(file);
@@ -148,7 +162,7 @@ export function FaceEnrollment() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-black">Face Enrollment</h1>
-        <p className="text-slate-500">Capture or upload 5 face images to enable matched face attendance.</p>
+        <p className="text-slate-500">Capture or upload 5 to 10 face images to enable matched face attendance.</p>
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
@@ -162,7 +176,7 @@ export function FaceEnrollment() {
               <button className="btn-soft" onClick={startCamera} disabled={loading}>
                 <Camera size={17} /> Camera
               </button>
-              <button className="btn-primary" onClick={captureSample} disabled={!cameraReady || loading || samples.length >= 5}>
+              <button className="btn-primary" onClick={captureSample} disabled={!cameraReady || loading || samples.length >= 10}>
                 {loading ? <Loader2 className="animate-spin" size={17} /> : <Camera size={17} />}
                 Capture
               </button>

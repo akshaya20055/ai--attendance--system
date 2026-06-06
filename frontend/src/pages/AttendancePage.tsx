@@ -25,6 +25,7 @@ export function AttendancePage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [faceEnrollmentCount, setFaceEnrollmentCount] = useState<number | null>(null);
+  const [allStudents, setAllStudents] = useState<User[]>([]);
 
   useEffect(() => {
     api.get('/classes').then((res) => {
@@ -39,6 +40,16 @@ export function AttendancePage() {
     }).catch(() => undefined);
     api.get('/attendance').then((res) => setRecords(res.data.records)).catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    if (user && user.role !== 'student') {
+      api.get('/users?role=student&approvalStatus=approved')
+        .then((res) => {
+          setAllStudents(res.data.users || []);
+        })
+        .catch((error) => console.error('[Attendance] Failed to fetch registered students', error));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user?.role !== 'student') {
@@ -169,7 +180,11 @@ export function AttendancePage() {
       </div>
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
         <WebcamAttendance
-          matchedStudentName={user?.role === 'student' ? user?.name : students.find((item) => (item._id || item.id) === selectedStudent)?.name}
+          matchedStudentName={
+            user?.role === 'student'
+              ? user?.name
+              : (allStudents.length > 0 ? allStudents : students).find((item) => (item._id || item.id) === selectedStudent)?.name
+          }
           attendanceEnabled={user?.role !== 'student' || Boolean(faceEnrollmentCount)}
           disabledReason="No face enrollment found for this student. Enroll 5 face samples before marking face attendance."
           onScan={async ({ confidence, embedding }) => {
@@ -212,7 +227,11 @@ export function AttendancePage() {
             {user?.role !== 'student' && (
               <select className="input" value={selectedStudent} onChange={(event) => setSelectedStudent(event.target.value)}>
                 <option value="">Select student</option>
-                {students.map((item) => <option key={item._id || item.id} value={item._id || item.id}>{item.name}</option>)}
+                {(allStudents.length > 0 ? allStudents : students).map((item) => (
+                  <option key={item._id || item.id} value={item._id || item.id}>
+                    {item.name} {item.studentId ? `(${item.studentId})` : ''}
+                  </option>
+                ))}
               </select>
             )}
             <div className="flex flex-wrap gap-2">

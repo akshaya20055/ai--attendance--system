@@ -17,6 +17,7 @@ import { StudentDashboard } from './pages/StudentDashboard';
 import { SubjectManagement } from './pages/SubjectManagement';
 import { UsersPage } from './pages/UsersPage';
 import { UserApprovals } from './pages/UserApprovals';
+import { FaceManagement } from './pages/FaceManagement';
 import { useAuth } from './state/AuthContext';
 
 function HomeRedirect() {
@@ -46,6 +47,7 @@ export function App() {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/subjects" element={<SubjectManagement />} />
             <Route path="/approvals" element={<UserApprovals />} />
+            <Route path="/face-management" element={<FaceManagement />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>

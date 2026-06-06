@@ -36,6 +36,7 @@ export function WebcamAttendance({
   const autoMarkingRef = useRef(false);
   const lastAutoMarkRef = useRef(0);
   const onScanRef = useRef(onScan);
+  const isMountedRef = useRef(true);
   const [cameraReady, setCameraReady] = useState(false);
   const [modelReady, setModelReady] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -44,10 +45,15 @@ export function WebcamAttendance({
   const [faceDetected, setFaceDetected] = useState(false);
 
   useEffect(() => {
+    isMountedRef.current = true;
+    if (attendanceEnabled) {
+      startCamera().catch((err) => console.error('[FaceRecognition] Auto-start camera failed', err));
+    }
     return () => {
+      isMountedRef.current = false;
       streamRef.current?.getTracks().forEach((track) => track.stop());
     };
-  }, []);
+  }, [attendanceEnabled]);
 
   useEffect(() => {
     onScanRef.current = onScan;
@@ -109,10 +115,15 @@ export function WebcamAttendance({
     try {
       setStatus('Requesting camera...');
       await loadDetector();
+      if (!isMountedRef.current) return;
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       });
+      if (!isMountedRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
       console.debug('[FaceRecognition] Camera permission granted', stream.getVideoTracks()[0]?.getSettings());
       streamRef.current = stream;
       if (videoRef.current) {
@@ -123,6 +134,7 @@ export function WebcamAttendance({
         console.debug('[FaceRecognition] Camera started');
       }
     } catch (error) {
+      if (!isMountedRef.current) return;
       console.error('[FaceRecognition] Camera/model startup failed', error);
       const permissionDenied = error instanceof DOMException && error.name === 'NotAllowedError';
       setStatus(permissionDenied ? 'Camera permission denied. Allow webcam access and try again.' : 'Camera or model could not start. Check console logs.');
@@ -133,7 +145,7 @@ export function WebcamAttendance({
     const now = Date.now();
     if (autoMarkingRef.current || saving) return;
     if (!attendanceEnabled) {
-      setStatus(disabledReason);
+      if (isMountedRef.current) setStatus(disabledReason);
       return;
     }
     if (!result.detected || result.confidence < AUTO_ATTENDANCE_CONFIDENCE || !result.embedding.length) return;
@@ -146,10 +158,12 @@ export function WebcamAttendance({
       console.debug('[FaceRecognition] Face detected', { confidence: result.confidence, autoAttendance: true });
       setStatus('Face detected. Matching enrollment...');
       const scanResult = await onScanRef.current({ confidence: result.confidence, embedding: result.embedding });
+      if (!isMountedRef.current) return;
       console.debug('[FaceRecognition] Face matched');
       console.debug('[FaceRecognition] Attendance saved', { confidence: result.confidence, result: scanResult });
       setStatus(scanResult?.message || 'Attendance marked successfully.');
     } catch (error) {
+      if (!isMountedRef.current) return;
       console.error('[FaceRecognition] Auto attendance failed', error);
       lastAutoMarkRef.current = Date.now();
       const statusCode = (error as any)?.response?.status;
@@ -159,8 +173,10 @@ export function WebcamAttendance({
         : apiMessage || (error as Error)?.message || 'Face detected, but attendance could not be saved.';
       setStatus(message);
     } finally {
-      setSaving(false);
-      autoMarkingRef.current = false;
+      if (isMountedRef.current) {
+        setSaving(false);
+        autoMarkingRef.current = false;
+      }
     }
   }
 
@@ -168,7 +184,7 @@ export function WebcamAttendance({
     const video = videoRef.current;
     await loadDetector();
     if (!video || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
-      if (forceStatus) setStatus('Camera frame is not ready yet.');
+      if (forceStatus && isMountedRef.current) setStatus('Camera frame is not ready yet.');
       return { confidence: 0, detected: false, embedding: [] };
     }
     if (detectingRef.current) return { confidence, detected: faceDetected, embedding: [] };
@@ -176,6 +192,7 @@ export function WebcamAttendance({
     detectingRef.current = true;
     try {
       const result = await detectFaceFromSource(video);
+      if (!isMountedRef.current) return { confidence: 0, detected: false, embedding: [] };
       if (!result) {
         clearCanvas();
         setFaceDetected(false);
@@ -222,21 +239,26 @@ export function WebcamAttendance({
     try {
       setStatus('Capturing current frame...');
       const result = await detectFace(true);
+      if (!isMountedRef.current) return;
       if (!result.detected || result.confidence <= 0.5) {
         setStatus('No face detected with enough confidence. Attendance not marked.');
         return;
       }
       setStatus('Face detected. Matching enrollment...');
       const scanResult = await onScanRef.current({ confidence: result.confidence, embedding: result.embedding });
+      if (!isMountedRef.current) return;
       console.debug('[FaceRecognition] Face matched');
       console.debug('[FaceRecognition] Attendance saved', { confidence: result.confidence, result: scanResult });
       setStatus(scanResult?.message || 'Attendance marked successfully.');
     } catch (error) {
+      if (!isMountedRef.current) return;
       console.error('[FaceRecognition] Attendance save failed', error);
       const message = (error as any)?.response?.data?.message || (error as Error)?.message || 'Face detected, but attendance could not be saved.';
       setStatus(message);
     } finally {
-      setSaving(false);
+      if (isMountedRef.current) {
+        setSaving(false);
+      }
     }
   }
 
@@ -248,7 +270,7 @@ export function WebcamAttendance({
           <p className="text-sm text-slate-500">Continuous TensorFlow.js detection with automatic attendance save</p>
         </div>
         <div className="flex gap-2">
-          <button className="btn-soft" onClick={startCamera} disabled={saving}>
+          <button className="btn-soft" onClick={() => startCamera()} disabled={saving}>
             <Camera size={17} /> Camera
           </button>
           <button className="btn-primary" onClick={scanFace} disabled={!cameraReady || !modelReady || !faceDetected || saving || !attendanceEnabled}>

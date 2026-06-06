@@ -31,6 +31,9 @@ export type User = {
   approvalStatus?: 'pending' | 'approved' | 'rejected';
   department?: { _id: string; name: string; code: string } | string;
   createdAt?: string;
+  updatedAt?: string;
+  faceImages?: string[];
+  faceEmbeddings?: number[][];
   faceEnrollmentCount?: number;
   hasFaceEnrollment?: boolean;
 };
